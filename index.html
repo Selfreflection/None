@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Keyboard</title>
+    <style>
+        /* Base Setup */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none; /* Prevents text highlighting on keys */
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        /* Screen Area where text appears */
+        #display-area {
+            width: 100%;
+            height: 40vh;
+            background-color: #2b2b2b;
+            border-radius: 12px;
+            padding: 15px;
+            font-size: 20px;
+            color: #fff;
+            border: 2px solid #3d3d3d;
+            overflow-y: auto;
+            white-space: pre-wrap; /* Keeps spaces and line breaks */
+        }
+
+        /* Keyboard Container */
+        .keyboard {
+            background-color: #121212;
+            padding: 10px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        /* Rows of Keys */
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        /* Individual Keys */
+        .key {
+            background-color: #333333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            flex: 1; /* Automatically sizes keys evenly */
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #222;
+            transition: background 0.1s;
+        }
+
+        /* Active/Pressed effect */
+        .key:active {
+            background-color: #555555;
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #222;
+        }
+
+        /* Special Function Keys */
+        .key.wide {
+            flex: 1.5;
+            background-color: #4a4a4a;
+        }
+
+        .key.space {
+            flex: 4;
+            background-color: #444;
+        }
+
+        .key.delete {
+            background-color: #bd3a3a;
+            box-shadow: 0 3px 0 #7a2222;
+        }
+        .key.delete:active {
+            background-color: #df4444;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- This shows what you've typed -->
+    <div id="display-area">Tap keys below...</div>
+
+    <!-- The Keyboard Layout -->
+    <div class="keyboard">
+        <!-- Row 1 -->
+        <div class="row">
+            <button class="key" onclick="pressKey('Q')">Q</button>
+            <button class="key" onclick="pressKey('W')">W</button>
+            <button class="key" onclick="pressKey('E')">E</button>
+            <button class="key" onclick="pressKey('R')">R</button>
+            <button class="key" onclick="pressKey('T')">T</button>
+            <button class="key" onclick="pressKey('Y')">Y</button>
+            <button class="key" onclick="pressKey('U')">U</button>
+            <button class="key" onclick="pressKey('I')">I</button>
+            <button class="key" onclick="pressKey('O')">O</button>
+            <button class="key" onclick="pressKey('P')">P</button>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row">
+            <button class="key" onclick="pressKey('A')">A</button>
+            <button class="key" onclick="pressKey('S')">S</button>
+            <button class="key" onclick="pressKey('D')">D</button>
+            <button class="key" onclick="pressKey('F')">F</button>
+            <button class="key" onclick="pressKey('G')">G</button>
+            <button class="key" onclick="pressKey('H')">H</button>
+            <button class="key" onclick="pressKey('J')">J</button>
+            <button class="key" onclick="pressKey('K')">K</button>
+            <button class="key" onclick="pressKey('L')">L</button>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="row">
+            <button class="key wide" onclick="pressKey('Shift')">⇧</button>
+            <button class="key" onclick="pressKey('Z')">Z</button>
+            <button class="key" onclick="pressKey('X')">X</button>
+            <button class="key" onclick="pressKey('C')">C</button>
+            <button class="key" onclick="pressKey('V')">V</button>
+            <button class="key" onclick="pressKey('B')">B</button>
+            <button class="key" onclick="pressKey('N')">N</button>
+            <button class="key" onclick="pressKey('M')">M</button>
+            <button class="key wide delete" onclick="pressKey('Backspace')">⌫</button>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="row">
+            <button class="key wide" onclick="pressKey('123')">123</button>
+            <button class="key space" onclick="pressKey(' ')">Space</button>
+            <button class="key wide" onclick="pressKey('Enter')">Enter</button>
+        </div>
+    </div>
+
+    <!-- The Script/Brain -->
+    <script>
+        const display = document.getElementById('display-area');
+        let currentText = "";
+        let isShifted = true; // Start with uppercase letters
+
+        function pressKey(key) {
+            // First clear the placeholder text if it's there
+            if (display.innerText === "Tap keys below...") {
+                display.innerText = "";
+            }
+
+            if (key === 'Backspace') {
+                // Remove the last letter
+                currentText = currentText.slice(0, -1);
+            } else if (key === 'Enter') {
+                // Add a new line break
+                currentText += "\n";
+            } else if (key === 'Shift') {
+                // Toggle uppercase/lowercase
+                isShifted = !isShifted;
+                toggleCase();
+                return; // Stop here so it doesn't type "Shift"
+            } else if (key === '123') {
+                alert("You can script this button later to switch to numbers!");
+                return;
+            } else {
+                // Standard character key
+                currentText += isShifted ? key.toUpperCase() : key.toLowerCase();
+            }
+
+            // Update the screen display
+            display.innerText = currentText || "Tap keys below...";
+        }
+
+        // Quick function to visual change keys to lower/upper case
+        function toggleCase() {
+            const keys = document.querySelectorAll('.key');
+            keys.forEach(k => {
+                if (k.innerText.length === 1) { // Only affect single-letter keys
+                    k.innerText = isShifted ? k.innerText.toUpperCase() : k.innerText.toLowerCase();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
