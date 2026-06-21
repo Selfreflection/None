@@ -19,36 +19,17 @@ jobs:
 
       - name: Manual Compilation Execution
         run: |
-          # Force delete any leftover directory shadows or artifacts to prevent hanging loops
           rm -rf res build
-          
-          # Rebuild clean temporary workspaces
           mkdir -p res/xml build/obj
-          
-          # Move your saved method.xml into the resource tree structure
           cp method.xml res/xml/
           
-          # 1. Link resources and generate the R.java mapping file
           $ANDROID_HOME/build-tools/34.0.0/aapt2 compile res/xml/method.xml -o build/compiled_res.zip
           $ANDROID_HOME/build-tools/34.0.0/aapt2 link build/compiled_res.zip -I $ANDROID_HOME/platforms/android-34/android.jar --manifest AndroidManifest.xml --java build -o build/output_unsigned.apk
           
-          # 2. Compile Java source to bytecode cleanly
           javac -d build/obj -classpath $ANDROID_HOME/platforms/android-34/android.jar build/com/mycode/customkeyboard/R.java SimpleKeyboardService.java
           
-          # 3. Convert Bytecode to Android Dex execution format using the modern D8 engine
-          $ANDROID_HOME/build-tools/34.0.0/d8 --output build/ build/obj/com/mycode/customkeyboard/SimpleKeyboardService.class build/obj/com/mycode/customkeyboard/R.class build/obj/com/mycode/customkeyboard/R\$xml.class
+          "$ANDROID_HOME/build-tools/34.0.0/d8" --output build/ build/obj/com/mycode/customkeyboard/SimpleKeyboardService.class build/obj/com/mycode/customkeyboard/R.class "build/obj/com/mycode/customkeyboard/R\$xml.class"
           
-          # 4. Inject the compiled dex bytecode file straight into the final APK container
-          cd build
-          zip -g output_unsigned.apk classes.dex
-          
-      - name: Export Output Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Native-NoGradle-Extension
-          path: build/output_unsigned.apk
-          
-          # 4. Inject the compiled dex bytecode file straight into the final APK container
           cd build
           zip -g output_unsigned.apk classes.dex
           
