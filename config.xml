@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget id="com.mycode.customkeyboard" version="1.0.0" xmlns="http://www.w3.org/ns/widgets">
+    
+    <name>Keyboard</name>
+    
+    <description>
+        SHUT UP, YOU'RE NEXT!
+    </description>
+    
+    <author email="developer@example.com">
+        Independent Coder
+    </author>
+    
+    <!-- This points to your main file -->
+    <content src="index.html" />
+    
+    <!-- Lock it to landscape or portrait, or leave it flexible -->
+    <preference name="Orientation" value="portrait" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="BackgroundColor" value="#1a1a1a" />
+
+</widget>
