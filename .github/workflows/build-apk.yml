@@ -1,4 +1,4 @@
-name: Build Free APK
+name: Build Free React Native APK
 on: [push, workflow_dispatch]
 
 jobs:
@@ -12,18 +12,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
 
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Create Cordova App Setup
-        run: |
-          cordova create build-folder com.mycode.customkeyboard "My Keyboard"
-          rm -rf build-folder/www/*
-          cp index.html build-folder/www/
-          cp config.xml build-folder/
-          cd build-folder
-          cordova platform add android
+      - name: Install Project Dependencies
+        run: npm install
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -34,13 +26,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Build Android APK
+      - name: Build Android Release APK
         run: |
-          cd build-folder
-          cordova build android --debug
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
 
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyKeyboard-APK
-          path: build-folder/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          name: MyKeyboard-Extension-APK
+          path: android/app/build/outputs/apk/release/app-release.unsigned.apk
