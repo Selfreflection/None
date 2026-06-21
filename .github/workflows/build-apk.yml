@@ -1,4 +1,4 @@
-name: Build Free React Native APK
+name: Build Free APK
 on: [push, workflow_dispatch]
 
 jobs:
@@ -35,5 +35,5 @@ jobs:
       - name: Upload Finished APK
         uses: actions/upload-artifact@v4
         with:
-          name: MyKeyboard-Extension-APK
+          name: Keyboard-Extension-APK
           path: android/app/build/outputs/apk/release/app-release.unsigned.apk
