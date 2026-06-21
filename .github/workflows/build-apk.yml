@@ -44,10 +44,3 @@ jobs:
         with:
           name: Native-NoGradle-Extension
           path: build/output_unsigned.apk
-          $ANDROID_HOME/build-tools/34.0.0/aapt package -f -M AndroidManifest.xml -S build/apk/res -I $ANDROID_HOME/platforms/android-34/android.jar -F build/output.apk build/apk
-          
-      - name: Export Output Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Native-NoGradle-Extension
-          path: build/output.apk
