@@ -19,21 +19,31 @@ jobs:
 
       - name: Manual Compilation Execution
         run: |
-          mkdir -p build/gen build/obj build/apk/res/xml
+          # Create fresh working directories for the build blocks
+          mkdir -p res/xml build/obj
           
-          # Move metadata files into alignment
-          cp method.xml build/apk/res/xml/
+          # Move your saved method.xml into the resource tree structure
+          cp method.xml res/xml/
           
-          # 1. Compile resource tables
-          $ANDROID_HOME/build-tools/34.0.0/aapt package -f -m -J build/gen -S build/apk/res -M AndroidManifest.xml -I $ANDROID_HOME/platforms/android-34/android.jar
+          # 1. Link resources and generate the R.java mapping file
+          $ANDROID_HOME/build-tools/34.0.0/aapt2 compile res/xml/method.xml -o build/compiled_res.zip
+          $ANDROID_HOME/build-tools/34.0.0/aapt2 link build/compiled_res.zip -I $ANDROID_HOME/platforms/android-34/android.jar --manifest AndroidManifest.xml --java build -o build/output_unsigned.apk
           
-          # 2. Compile Java Source to Bytecode
-          javac -d build/obj -classpath $ANDROID_HOME/platforms/android-34/android.jar build/gen/com/mycode/customkeyboard/R.java SimpleKeyboardService.java
+          # 2. Compile Java source to bytecode (including the freshly generated R.java file)
+          javac -d build/obj -classpath $ANDROID_HOME/platforms/android-34/android.jar build/com/mycode/customkeyboard/R.java SimpleKeyboardService.java
           
-          # 3. Convert Bytecode to Android Dex Execution Machine format
-          $ANDROID_HOME/build-tools/34.0.0/dx --dex --output=build/apk/classes.dex build/obj
+          # 3. Convert Bytecode to Android Dex execution format using the modern D8 engine
+          $ANDROID_HOME/build-tools/34.0.0/d8 --output build/ build/obj/com/mycode/customkeyboard/SimpleKeyboardService.class build/obj/com/mycode/customkeyboard/R.class build/obj/com/mycode/customkeyboard/R\$xml.class
           
-          # 4. Package everything into a raw APK container
+          # 4. Inject the compiled dex bytecode file straight into the final APK container
+          cd build
+          zip -g output_unsigned.apk classes.dex
+          
+      - name: Export Output Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Native-NoGradle-Extension
+          path: build/output_unsigned.apk
           $ANDROID_HOME/build-tools/34.0.0/aapt package -f -M AndroidManifest.xml -S build/apk/res -I $ANDROID_HOME/platforms/android-34/android.jar -F build/output.apk build/apk
           
       - name: Export Output Artifact
