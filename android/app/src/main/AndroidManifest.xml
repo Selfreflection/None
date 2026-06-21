@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.mycode.customkeyboard">
+    <application android:label="My Extension Keyboard">
+        <service
+            android:name=".SimpleKeyboardService"
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method.xml" />
+        </service>
+    </application>
+</manifest>
